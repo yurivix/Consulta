@@ -1,39 +1,36 @@
-from flask import Flask, render_template, request, redirect, url_for
-import uuid
-
+from flask import Flask, render_template, request, jsonify
 app = Flask(__name__)
-processos = {}  # Armazena os processos em memória temporariamente
+
+# Simulando uma base de dados de processos
+DADOS_PROCESSOS = {
+    "0000001-00.2020.8.26.0000": {
+        "autor": "João da Silva",
+        "réu": "Empresa XYZ Ltda",
+        "vara": "1ª Vara Cível",
+        "data_distribuicao": "15/03/2020",
+        "assunto": "Cobrança"
+    },
+    "0000002-00.2020.8.26.0000": {
+        "autor": "Maria Oliveira",
+        "réu": "Banco ABC S.A.",
+        "vara": "2ª Vara Cível",
+        "data_distribuicao": "10/05/2020",
+        "assunto": "Empréstimo"
+    }
+}
 
 @app.route('/')
 def index():
-    return '''
-        <h2>Enviar Novo Processo</h2>
-        <form method="post" action="/novo">
-            <textarea name="dados" rows="20" cols="100" placeholder='Cole os dados em JSON aqui'></textarea><br>
-            <input type="submit" value="Enviar">
-        </form>
-    '''
+    return render_template('index.html')
 
-@app.route('/novo', methods=['POST'])
-def novo_processo():
-    import json
+@app.route('/buscar_processo', methods=['POST'])
+def buscar_processo():
+    numero = request.json.get('numero')
+    dados = DADOS_PROCESSOS.get(numero)
+    if dados:
+        return jsonify(dados)
+    else:
+        return jsonify({"erro": "Processo não encontrado."}), 404
 
-    try:
-        dados = json.loads(request.form['dados'])
-    except Exception as e:
-        return f'<p>Erro ao interpretar os dados: {e}</p><a href="/">Voltar</a>'
-
-    processo_id = str(uuid.uuid4())  # gera ID único
-    processos[processo_id] = dados
-    return redirect(url_for('resumo_processo', processo_id=processo_id))
-
-@app.route('/resumo/<processo_id>')
-def resumo_processo(processo_id):
-    dados = processos.get(processo_id)
-    if not dados:
-        return "<p>Processo não encontrado</p>"
-
-    return render_template('resumo.html',
-                           autora=dados.get('autora'),
-                           reus=dados.get('reus'),
-                           processo_id=processo_id)
+if __name__ == '__main__':
+    app.run(debug=True)
