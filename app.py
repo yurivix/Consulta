@@ -12,7 +12,7 @@ PJE_USER = os.getenv('PJE_USER')
 PJE_PASS = os.getenv('PJE_PASS')
 
 # URL do WSDL do PJe/TJES
-WSDL_URL = 'https://pje.tjes.jus.br/pje/ConsultaPJe?wsdl'
+WSDL_URL = 'https://pje.tjes.jus.br/pje/intercomunicacao?wsdl'
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -28,7 +28,7 @@ def index():
             # Cria o cliente com autenticação
             client = Client(wsdl=WSDL_URL, transport=transport)
 
-            # ⚠️ Troque 'consultarProcesso' pelo método correto do WSDL
+            # Chama o método correto com os parâmetros necessários
             response = client.service.consultarProcesso(numeroProcesso=numero_processo)
 
             return render_template('resultado.html', processo=response)
