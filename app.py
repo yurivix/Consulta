@@ -7,11 +7,12 @@ import os
 
 app = Flask(__name__)
 
-# Pegando usuário e senha das variáveis de ambiente
+# Pegando usuário, senha e idConsultante das variáveis de ambiente
 PJE_USER = os.getenv('PJE_USER')
 PJE_PASS = os.getenv('PJE_PASS')
+ID_CONSULTANTE = os.getenv('ID_CONSULTANTE')  # <-- adicione isso no Render também
 
-# URL do WSDL do PJe/TJES
+# WSDL do serviço de intercomunicação
 WSDL_URL = 'https://pje.tjes.jus.br/pje/intercomunicacao?wsdl'
 
 @app.route('/', methods=['GET', 'POST'])
@@ -20,16 +21,19 @@ def index():
         numero_processo = request.form['numero_processo']
 
         try:
-            # Autenticação via HTTP Basic
+            # Sessão autenticada
             session = requests.Session()
             session.auth = HTTPBasicAuth(PJE_USER, PJE_PASS)
             transport = Transport(session=session)
 
-            # Cria o cliente com autenticação
+            # Cliente SOAP com autenticação
             client = Client(wsdl=WSDL_URL, transport=transport)
 
-            # Chama o método correto com os parâmetros necessários
-            response = client.service.consultarProcesso(numeroProcesso=numero_processo)
+            # Consulta ao processo com os dois parâmetros
+            response = client.service.consultarProcesso(
+                idConsultante=ID_CONSULTANTE,
+                numeroProcesso=numero_processo
+            )
 
             return render_template('resultado.html', processo=response)
 
