@@ -1,61 +1,72 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <title>Resultado da Consulta</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 2em;
-            background-color: #f4f4f4;
-        }
-        h1 {
-            color: #003366;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        th, td {
-            padding: 10px;
-            border: 1px solid #ccc;
-            text-align: left;
-            vertical-align: top;
-        }
-        th {
-            background-color: #003366;
-            color: white;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Resumo do Processo</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      color: #333;
+    }
+    h1, h2, h3 {
+      color: #0b3d91;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 40px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background-color: #f0f0f0;
+    }
+    button {
+      background-color: #0b3d91;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    button:hover {
+      background-color: #062b6c;
+    }
+    @media print {
+      button {
+        display: none;
+      }
+    }
+  </style>
 </head>
 <body>
-    <h1>Detalhes do Processo</h1>
 
-    {% if processo %}
+  <h1>Resumo das Partes do Processo</h1>
+
+  <button onclick="window.print()">Imprimir em PDF</button>
+
+  <h2>Autora</h2>
+  <table>
+    {% for campo, valor in autora.items() %}
+      <tr><th>{{ campo }}</th><td>{{ valor }}</td></tr>
+    {% endfor %}
+  </table>
+
+  <h2>Réus</h2>
+  {% for reu in reus %}
+    <h3>{{ reu.nome }}</h3>
     <table>
-        <tbody>
-        {% for chave, valor in processo.__dict__.items() %}
-            <tr>
-                <th>{{ chave }}</th>
-                <td>
-                    {% if valor is iterable and not valor|string %}
-                        <ul>
-                        {% for item in valor %}
-                            <li>{{ item }}</li>
-                        {% endfor %}
-                        </ul>
-                    {% else %}
-                        {{ valor }}
-                    {% endif %}
-                </td>
-            </tr>
-        {% endfor %}
-        </tbody>
+      {% for campo, valor in reu.dados.items() %}
+        <tr><th>{{ campo }}</th><td>{{ valor | safe }}</td></tr>
+      {% endfor %}
     </table>
-    {% else %}
-        <p>Nenhum dado encontrado para esse processo.</p>
-    {% endif %}
+  {% endfor %}
+
 </body>
 </html>
