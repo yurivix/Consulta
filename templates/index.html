@@ -1,76 +1,35 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Consulta de Processo - TJES</title>
+    <title>Consulta de Processos - TJES</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 2rem;
-            background-color: #f9f9f9;
-        }
-        h1 {
-            color: #003366;
-        }
-        form {
-            margin-bottom: 2rem;
-        }
-        input[type="text"] {
-            padding: 0.5rem;
-            width: 300px;
-            font-size: 1rem;
-        }
-        button {
-            padding: 0.5rem 1rem;
-            font-size: 1rem;
-            background-color: #003366;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 1rem;
-            background-color: white;
-        }
-        th, td {
-            border: 1px solid #ccc;
-            padding: 0.75rem;
-            text-align: left;
-        }
-        th {
-            background-color: #003366;
-            color: white;
-        }
-        .print-button {
-            margin-top: 1rem;
-            background-color: #990000;
-        }
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .print-button { margin-top: 20px; }
     </style>
 </head>
 <body>
-    <h1>Consulta de Processo - TJES</h1>
+    <h1>Consulta de Processo TJES</h1>
     <form method="POST">
-        <label for="numero_processo">Número do Processo:</label>
+        <label for="numero_processo">Número do processo:</label><br>
         <input type="text" id="numero_processo" name="numero_processo" required>
         <button type="submit">Consultar</button>
     </form>
 
-    {% if dados %}
-    <h2>Informações do Processo</h2>
-    <div id="resultado">
+    {% if processo_info %}
+        <h2>Informações do Processo</h2>
         <table>
-            <tr><th>Campo</th><th>Valor</th></tr>
-            {% for chave, valor in dados.items() %}
-            <tr>
-                <td>{{ chave }}</td>
-                <td>{{ valor }}</td>
-            </tr>
+            {% for chave, valor in processo_info.items() %}
+                <tr>
+                    <th>{{ chave }}</th>
+                    <td>{{ valor }}</td>
+                </tr>
             {% endfor %}
         </table>
-    </div>
-    <button class="print-button" onclick="window.print()">Imprimir / Salvar PDF</button>
+        <button class="print-button" onclick="window.print()">Imprimir / Salvar em PDF</button>
     {% endif %}
 </body>
 </html>
