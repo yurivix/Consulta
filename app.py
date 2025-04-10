@@ -1,36 +1,35 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request
+from zeep import Client
+import os
+
 app = Flask(__name__)
 
-# Simulando uma base de dados de processos
-DADOS_PROCESSOS = {
-    "0000001-00.2020.8.26.0000": {
-        "autor": "João da Silva",
-        "réu": "Empresa XYZ Ltda",
-        "vara": "1ª Vara Cível",
-        "data_distribuicao": "15/03/2020",
-        "assunto": "Cobrança"
-    },
-    "0000002-00.2020.8.26.0000": {
-        "autor": "Maria Oliveira",
-        "réu": "Banco ABC S.A.",
-        "vara": "2ª Vara Cível",
-        "data_distribuicao": "10/05/2020",
-        "assunto": "Empréstimo"
-    }
-}
+# Substitua por seu caminho local ao certificado se necessário
+WSDL_URL = "https://pje.tjes.jus.br/pje/intercomunicacao?wsdl"
+client = Client(WSDL_URL)
 
-@app.route('/')
+@app.route("/", methods=["GET", "POST"])
 def index():
-    return render_template('index.html')
+    processo_data = None
+    if request.method == "POST":
+        numero_processo = request.form["numero_processo"]
+        try:
+            # Aqui você precisa substituir pela chamada correta ao método do serviço do TJES
+            # Abaixo é um exemplo genérico e pode variar dependendo do WSDL
+            response = client.service.consultarProcesso(numero_processo)
 
-@app.route('/buscar_processo', methods=['POST'])
-def buscar_processo():
-    numero = request.json.get('numero')
-    dados = DADOS_PROCESSOS.get(numero)
-    if dados:
-        return jsonify(dados)
-    else:
-        return jsonify({"erro": "Processo não encontrado."}), 404
+            processo_data = {
+                "numero": response.numeroProcesso,
+                "classe": response.classe,
+                "assunto": response.assunto,
+                "partes": response.partes,
+                "movimentacoes": response.movimentacoes
+            }
 
-if __name__ == '__main__':
+        except Exception as e:
+            processo_data = {"erro": str(e)}
+
+    return render_template("index.html", processo=processo_data)
+
+if __name__ == "__main__":
     app.run(debug=True)
