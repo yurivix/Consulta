@@ -1,13 +1,61 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
     <title>Resultado da Consulta</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 2em;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            color: #003366;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: left;
+            vertical-align: top;
+        }
+        th {
+            background-color: #003366;
+            color: white;
+        }
+    </style>
 </head>
 <body>
     <h1>Detalhes do Processo</h1>
-    <!-- Exiba as informações do processo aqui -->
-    <p>{{ processo }}</p>
-    <a href="/">Nova Consulta</a>
+
+    {% if processo %}
+    <table>
+        <tbody>
+        {% for chave, valor in processo.__dict__.items() %}
+            <tr>
+                <th>{{ chave }}</th>
+                <td>
+                    {% if valor is iterable and not valor|string %}
+                        <ul>
+                        {% for item in valor %}
+                            <li>{{ item }}</li>
+                        {% endfor %}
+                        </ul>
+                    {% else %}
+                        {{ valor }}
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p>Nenhum dado encontrado para esse processo.</p>
+    {% endif %}
 </body>
 </html>
