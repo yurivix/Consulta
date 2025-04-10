@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Resumo do Processo</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      color: #333;
+    }
+    h1, h2, h3 {
+      color: #0b3d91;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 40px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background-color: #f0f0f0;
+    }
+    button {
+      background-color: #0b3d91;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    button:hover {
+      background-color: #062b6c;
+    }
+    @media print {
+      button {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Resumo das Partes do Processo</h1>
+
+  <button onclick="window.print()">Imprimir em PDF</button>
+
+  <h2>Autora</h2>
+  <table>
+    {% for campo, valor in autora.items() %}
+      <tr><th>{{ campo }}</th><td>{{ valor }}</td></tr>
+    {% endfor %}
+  </table>
+
+  <h2>Réus</h2>
+  {% for reu in reus %}
+    <h3>{{ reu.nome }}</h3>
+    <table>
+      {% for campo, valor in reu.dados.items() %}
+        <tr><th>{{ campo }}</th><td>{{ valor | safe }}</td></tr>
+      {% endfor %}
+    </table>
+  {% endfor %}
+
+</body>
+</html>
