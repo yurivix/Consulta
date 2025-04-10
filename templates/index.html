@@ -1,15 +1,71 @@
-<!doctype html>
-<html lang="pt-BR">
+<!DOCTYPE html>
+<html lang="pt-br">
 <head>
-    <meta charset="utf-8">
-    <title>Consulta de Processo</title>
+    <meta charset="UTF-8">
+    <title>Consulta de Processos</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        table, th, td {
+            border: 1px solid #000;
+            border-collapse: collapse;
+            padding: 8px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Consultar Andamentos Processuais</h1>
-    <form method="post">
-        <label for="numero_processo">Número do Processo:</label>
-        <input type="text" id="numero_processo" name="numero_processo" required>
-        <button type="submit">Consultar</button>
-    </form>
+    <h1>Consulta de Processos</h1>
+    <input type="text" id="numero_processo" placeholder="Digite o número do processo">
+    <button onclick="buscarProcesso()">Buscar</button>
+    <button onclick="gerarPDF()">Imprimir PDF</button>
+
+    <div id="resultado"></div>
+
+    <script>
+        async function buscarProcesso() {
+            const numero = document.getElementById("numero_processo").value;
+            const resposta = await fetch('/buscar_processo', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({numero})
+            });
+
+            const container = document.getElementById("resultado");
+            if (resposta.ok) {
+                const dados = await resposta.json();
+                container.innerHTML = `
+                    <table id="tabela">
+                        <tr><th>Campo</th><th>Valor</th></tr>
+                        <tr><td>Autor</td><td>${dados.autor}</td></tr>
+                        <tr><td>Réu</td><td>${dados.réu}</td></tr>
+                        <tr><td>Vara</td><td>${dados.vara}</td></tr>
+                        <tr><td>Data de Distribuição</td><td>${dados.data_distribuicao}</td></tr>
+                        <tr><td>Assunto</td><td>${dados.assunto}</td></tr>
+                    </table>
+                `;
+            } else {
+                container.innerHTML = `<p style="color: red;">Processo não encontrado.</p>`;
+            }
+        }
+
+        function gerarPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const tabela = document.getElementById("tabela");
+            if (!tabela) return alert("Nenhum dado para imprimir!");
+
+            let y = 20;
+            doc.text("Detalhes do Processo", 20, y);
+            y += 10;
+
+            for (const row of tabela.rows) {
+                const col1 = row.cells[0].innerText;
+                const col2 = row.cells[1].innerText;
+                doc.text(`${col1}: ${col2}`, 20, y);
+                y += 10;
+            }
+
+            doc.save("processo.pdf");
+        }
+    </script>
 </body>
 </html>
